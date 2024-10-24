@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
-// Клас для представлення товару
+// представлення товару
 class Product {
     private String name;
     private double price;
@@ -37,18 +37,18 @@ class Product {
     }
 }
 
-// Клас для представлення замовлення
+// представлення замовлення
 class Order {
     private String customerName;
     private String address;
     private Product product;
-    private boolean isReserved; // Поле для позначення, чи замовлення заброньоване
+    private boolean isReserved; // поле для позначення, чи замовлення заброньоване
 
     public Order(String customerName, String address, Product product, boolean isReserved) {
         this.customerName = customerName;
         this.address = address;
         this.product = product;
-        this.isReserved = isReserved; // Ініціалізація поля
+        this.isReserved = isReserved; 
     }
 
     public String getCustomerName() {
@@ -63,12 +63,12 @@ class Order {
         return product;
     }
 
-    public boolean isReserved() { // Метод для перевірки, чи замовлення заброньоване
+    public boolean isReserved() { // метод для перевірки, чи замовлення заброньоване
         return isReserved;
     }
 }
 
-// Клас для представлення адміністратора
+// представлення адміністратора
 class Admin {
     private OnlineStore store;
 
@@ -94,7 +94,7 @@ class Admin {
             System.out.println("Немає оформлених замовлень.");
         } else {
             for (Order order : store.getOrders()) {
-                String reservationStatus = order.isReserved() ? " (Бронь)" : ""; // Перевірка статусу броні
+                String reservationStatus = order.isReserved() ? " (Бронь)" : ""; // перевірка статусу броні
                 System.out.println("Користувач: " + order.getCustomerName() +
                         ", Товар: " + order.getProduct().getName() +
                         ", Адреса: " + order.getAddress() + reservationStatus);
@@ -103,7 +103,7 @@ class Admin {
     }
 }
 
-// Клас для представлення покупця
+// представлення покупця
 class Customer implements Runnable {
     private OnlineStore store;
     private String name;
@@ -132,7 +132,7 @@ class Customer implements Runnable {
         String productName = scanner.nextLine();
         Product selectedProduct = null;
 
-        // Знайти товар за назвою
+        // знаходження товару за назвою
         for (Product product : store.getProducts()) {
             if (product.getName().equalsIgnoreCase(productName)) {
                 selectedProduct = product;
@@ -148,7 +148,7 @@ class Customer implements Runnable {
                 }
             } else {
                 System.out.println("Товар " + selectedProduct.getName() + " відсутній, але ми забронювали наступну партію для вас.");
-                store.addOrder(new Order(name, address, selectedProduct, true)); // Бронюємо товар для користувача
+                store.addOrder(new Order(name, address, selectedProduct, true)); // Бронь товару для користувача
             }
         } else {
             System.out.println("Товар не знайдений. Перевірте назву.");
@@ -156,7 +156,7 @@ class Customer implements Runnable {
     }
 }
 
-// Клас для представлення інтернет-магазину
+// представлення інтернет-магазину
 class OnlineStore {
     private List<Product> products;
     private List<Order> orders;
@@ -165,7 +165,7 @@ class OnlineStore {
     public OnlineStore() {
         this.products = new ArrayList<>();
         this.orders = new ArrayList<>();
-        this.isOpen = true; // Магазин відкритий за замовчуванням
+        this.isOpen = true; // відкритий за замовчуванням
     }
 
     public void addProduct(Product product) {
@@ -193,12 +193,11 @@ class OnlineStore {
     }
 }
 
-// Головний клас для запуску програми
 public class store {
     public static void main(String[] args) {
         OnlineStore store = new OnlineStore();
 
-        // Додати доступні товари
+        // доступні товари
         store.addProduct(new Product("Комп'ютер 1", 15000, 3));
         store.addProduct(new Product("Комп'ютер 2", 12000, 3));
         store.addProduct(new Product("Комп'ютер 3", 18000, 3));
