@@ -7,7 +7,7 @@ import java.util.concurrent.Semaphore;
 class Product {
     private String name;
     private double price;
-    private Semaphore semaphore;
+    private Semaphore semaphore; //контролює доступ до кількості товарів
 
     public Product(String name, double price, int quantity) {
         this.name = name;
@@ -27,7 +27,7 @@ class Product {
         return semaphore.tryAcquire();
     }
 
-    public void restock(int quantity) {
+    public void restock(int quantity) { //поповнення запасів товару
         semaphore.release(quantity);
     }
 
@@ -45,7 +45,7 @@ class Order {
         this.customerName = customerName;
         this.address = address;
         this.product = product;
-        this.isReserved = isReserved; 
+        this.isReserved = isReserved;
     }
 
     public String getCustomerName() {
@@ -72,6 +72,7 @@ class Admin {
         this.store = store;
     }
 
+    //додавання товарів адміном
     public void addProduct() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введіть назву товару:");
@@ -84,6 +85,7 @@ class Admin {
         System.out.println("Товар додано.");
     }
 
+    //перегляд замовлень
     public void viewOrders() {
         System.out.println("Перегляд замовлень:");
         if (store.getOrders().isEmpty()) {
@@ -100,8 +102,6 @@ class Admin {
 }
 
 class Customer implements Runnable {
-
-
     private OnlineStore store;
     private String name;
     private String address;
@@ -112,6 +112,7 @@ class Customer implements Runnable {
         this.address = address;
     }
 
+    //контроль доступу магазину; працює до 17:00
     @Override
     public void run() {
         if (!store.isWithinOpenHours()) {
@@ -232,7 +233,8 @@ public class store {
                     System.out.println("Введіть адресу:");
                     String customerAddress = scanner.next();
                     Customer customer = new Customer(store, customerName, customerAddress);
-                    customer.run();
+                    Thread customerThread = new Thread(customer);
+                    customerThread.start(); //запуск потоку
                     break;
                 case 3:
                     admin.viewOrders();
