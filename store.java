@@ -1,9 +1,10 @@
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
-// представлення товару
+// Клас для представлення товару
 class Product {
     private String name;
     private double price;
@@ -36,18 +37,18 @@ class Product {
     }
 }
 
-// представлення замовлення
+// Клас для представлення замовлення
 class Order {
     private String customerName;
     private String address;
     private Product product;
-    private boolean isReserved; // поле для позначення, чи замовлення заброньоване
+    private boolean isReserved; // Поле для позначення, чи замовлення заброньоване
 
     public Order(String customerName, String address, Product product, boolean isReserved) {
         this.customerName = customerName;
         this.address = address;
         this.product = product;
-        this.isReserved = isReserved; 
+        this.isReserved = isReserved; // Ініціалізація поля
     }
 
     public String getCustomerName() {
@@ -62,12 +63,12 @@ class Order {
         return product;
     }
 
-    public boolean isReserved() { // метод для перевірки, чи замовлення заброньоване
+    public boolean isReserved() { // Метод для перевірки, чи замовлення заброньоване
         return isReserved;
     }
 }
 
-// представлення адміністратора
+// Клас для представлення адміністратора
 class Admin {
     private OnlineStore store;
 
@@ -93,7 +94,7 @@ class Admin {
             System.out.println("Немає оформлених замовлень.");
         } else {
             for (Order order : store.getOrders()) {
-                String reservationStatus = order.isReserved() ? " (Бронь)" : ""; // перевірка статусу броні
+                String reservationStatus = order.isReserved() ? " (Бронь)" : ""; // Перевірка статусу броні
                 System.out.println("Користувач: " + order.getCustomerName() +
                         ", Товар: " + order.getProduct().getName() +
                         ", Адреса: " + order.getAddress() + reservationStatus);
@@ -102,8 +103,10 @@ class Admin {
     }
 }
 
-// представлення покупця
+// Клас для представлення покупця
 class Customer implements Runnable {
+
+
     private OnlineStore store;
     private String name;
     private String address;
@@ -116,8 +119,8 @@ class Customer implements Runnable {
 
     @Override
     public void run() {
-        if (!store.isOpen()) {
-            System.out.println("Магазин зачинений. Спробуйте пізніше.");
+        if (!store.isWithinOpenHours()) {
+            System.out.println("Магазин зачинений о 17:00. Спробуйте пізніше.");
             return;
         }
 
@@ -131,7 +134,7 @@ class Customer implements Runnable {
         String productName = scanner.nextLine();
         Product selectedProduct = null;
 
-        // знаходження товару за назвою
+        // Знайти товар за назвою
         for (Product product : store.getProducts()) {
             if (product.getName().equalsIgnoreCase(productName)) {
                 selectedProduct = product;
@@ -147,7 +150,7 @@ class Customer implements Runnable {
                 }
             } else {
                 System.out.println("Товар " + selectedProduct.getName() + " відсутній, але ми забронювали наступну партію для вас.");
-                store.addOrder(new Order(name, address, selectedProduct, true)); // Бронь товару для користувача
+                store.addOrder(new Order(name, address, selectedProduct, true)); // Бронюємо товар для користувача
             }
         } else {
             System.out.println("Товар не знайдений. Перевірте назву.");
@@ -155,16 +158,23 @@ class Customer implements Runnable {
     }
 }
 
-// представлення інтернет-магазину
+// Клас для представлення інтернет-магазину
 class OnlineStore {
     private List<Product> products;
     private List<Order> orders;
     private boolean isOpen;
 
+    public boolean isWithinOpenHours() {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        return hour < 17 || (hour == 17 && minute == 0);
+    }
+
     public OnlineStore() {
         this.products = new ArrayList<>();
         this.orders = new ArrayList<>();
-        this.isOpen = true; // відкритий за замовчуванням
+        this.isOpen = true; // Магазин відкритий за замовчуванням
     }
 
     public void addProduct(Product product) {
@@ -192,11 +202,12 @@ class OnlineStore {
     }
 }
 
+// Головний клас для запуску програми
 public class store {
     public static void main(String[] args) {
         OnlineStore store = new OnlineStore();
 
-        // доступні товари
+        // Додати доступні товари
         store.addProduct(new Product("Комп'ютер 1", 15000, 3));
         store.addProduct(new Product("Комп'ютер 2", 12000, 3));
         store.addProduct(new Product("Комп'ютер 3", 18000, 3));
